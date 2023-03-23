@@ -1,0 +1,19 @@
+- name: Install software on servers
+  hosts: local_network
+  become: true
+
+  tasks:
+
+  - name: Ubuntu, сheck OS type and install app
+    when: ansible_os_family == "Ubuntu"
+    apt:
+      update_cache: yes
+      name: package2
+      state: present
+
+  - name: CentOS, сheck OS type and install app
+    when: ansible_os_family == "CentOS"
+    yum:
+      update_cache: yes
+      name: pckg02
+      state: present

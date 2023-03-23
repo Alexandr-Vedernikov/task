@@ -1,0 +1,26 @@
+- name: Search for user login on specified date
+  hosts: local_network
+  become: yes
+  vars:
+    #Имя искомого пользователя
+    username: "vagrant"
+    #Искомая дата входа на хосты пользователя. Дама в формате YYYY-MM-DD
+    date: "2023-03-21"
+    out_ip: ""
+
+  tasks:
+    - name: Check system logs for user login
+      shell: "grep '{{ username }}' /var/log/auth.log | tail -n 1 | grep '{{ date }}' | awk '{print $1}'"
+      register: result
+      changed_when: false
+    - set_fact:
+        out_ip: "{{ ansible_host }}"
+      when: result.rc == 0
+
+    - name: Write IP address to file
+      local_action:
+        module: copy
+        content: "{{ out_ip }}"
+        dest: "./out_ip.txt"
+        mode: 'a'
+        remote_src: no
